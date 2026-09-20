@@ -1,0 +1,4 @@
+interface:
+  display_name: "Plain Docs"
+  short_description: "Professional manual design with verified text and figures"
+  default_prompt: "Use $plain-docs to design a professional manual from my source material, with suitable page layouts, useful figures, and verified text."
