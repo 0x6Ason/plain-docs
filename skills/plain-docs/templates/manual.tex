@@ -1,0 +1,49 @@
+% Equipment or software manual. Copy, fill, build with scripts/build.py.
+% Delete any section the product does not need. Never invent facts to fill one.
+\documentclass[type=manual, lang=en-GB]{plaindoc}   % lang: see references/languages.md
+
+\pdset{
+  brand    = {},            % maker, as printed on the product
+  title    = {},            % product name and model
+  subtitle = {User manual},
+  product  = {},            % short name for the running head
+  doctype  = {User manual},
+  docid    = {},            % document number, only if one exists
+  version  = {},
+  date     = {},
+}
+% \input{figures}                       % TikZ drawings: references/layout.md
+% \pdcover{\centering\frontpanel}       % product drawing on the cover
+
+\begin{document}
+\maketitle
+\tableofcontents
+
+\chapter{About this manual}
+% Who it is for, what it covers, notation table (\key, \ui, \menu, \cmd, →).
+
+\chapter{Safety}
+% Signal-word table, then one safety message per real hazard:
+% \begin{safety}{warning}[Hazard in a few words]
+%   Consequence. How to avoid it.
+% \end{safety}
+% Intended use and what not to do.
+
+\chapter{Product overview}
+% \begin{figure}[h]\pdwide{\centering <drawing with \pdcallout>}\caption{...}\end{figure}
+% \begin{pdlegend} \legenditem{1}{Part}{What it does.} \end{pdlegend}
+
+\chapter{Setting up}
+% \section{Before you begin}  list of what the reader needs
+% \begin{steps} \item Action. \result{What the reader sees.} \end{steps}
+
+\chapter{Operation}
+% One section per task, named with a verb: "Set the current limit".
+
+\chapter{Troubleshooting}
+% xltabular: Symptom | Possible cause | Action
+
+\chapter{Specifications}
+% xltabular with \pdgroup rows and \qty / \qtyrange for every value.
+
+\end{document}

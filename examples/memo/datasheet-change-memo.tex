@@ -1,0 +1,50 @@
+% Memo -- example for the plaindoc class. People and products are fictional.
+% Build: latexmk -lualatex datasheet-change-memo.tex
+\documentclass[type=memo, lang=en-GB]{plaindoc}
+
+\pdset{
+  org   = {Orrin Instruments (fictional)},
+  title = {Derate DP305 current above 35\,°C},
+  to    = {Product Marketing},
+  from  = {M. Chan, Product Engineering},
+  cc    = {Quality, Technical Documentation},
+  date  = {25 November 2026},
+  docid = {TR-2026-041},
+}
+
+\begin{document}
+\maketitle
+
+Please change the DP305 datasheet and user manual before the January print
+run. Thermal testing (TR-2026-041) shows that the DP305 cannot deliver its
+full \qty{5}{\ampere} for longer than about an hour at \qty{40}{\degreeCelsius}
+ambient. Below \qty{35}{\degreeCelsius} it is unaffected.
+
+\section*{What changes}
+
+\begin{itemize}
+\item Specifications: add \enquote{Full output up to \qty{35}{\degreeCelsius}
+      ambient; derate current linearly to \qty{4}{\ampere} at
+      \qty{40}{\degreeCelsius}.}
+\item User manual, chapter 7: the same sentence under \emph{Operating temperature}.
+\item No firmware or hardware change. Over-temperature protection already
+      switches the output off safely.
+\end{itemize}
+
+\section*{Dates}
+
+\begin{tabularx}{\linewidth}{@{}lL@{}}
+\toprule
+\hd{Date} & \hd{Action} \\
+\midrule
+5 December 2026  & Engineering confirms the \qty{4}{\ampere} limit on three units. \\
+12 December 2026 & Marketing and Documentation submit the revised pages for review. \\
+9 January 2027   & Print run with the revised datasheet. \\
+\bottomrule
+\end{tabularx}
+
+\medskip
+Units already shipped do not need any action. The full test report is
+attached.
+
+\end{document}

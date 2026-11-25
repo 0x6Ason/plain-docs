@@ -1,7 +1,0 @@
-Export records
-CSV (UTF-8)
-The first row contains column headings.
-匯出記錄
-第一列為欄位標題。
-导出记录
-第一行为列标题。

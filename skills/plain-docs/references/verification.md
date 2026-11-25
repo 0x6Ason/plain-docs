@@ -1,55 +1,104 @@
 # Verification
 
-Use the installed environment's equivalent tools when available. The helper is optional; the checks are the workflow. Paths below are relative to the skill folder.
+A PDF that compiled is not a finished document. Run the checks, then look.
 
-## Helper
-
-Python 3.10+ is required. The source scan uses the standard library. Font checks additionally use `fonttools`; PDF checks use `pypdf` and `pdfplumber`.
+## 1. Source lint
 
 ```sh
-python scripts/preflight.py source final-text.txt
-python scripts/preflight.py source heading-text.txt --font /path/to/bold.ttf
-python scripts/preflight.py source chinese-body.txt --font /path/to/regular.ttc --font-index 0
-python scripts/preflight.py pdf document.pdf --expect critical-strings.txt
-python scripts/preflight.py pdf document.pdf --json work/preflight.json
+python3 scripts/lint.py document.tex chapters/*.tex
 ```
 
-For font coverage, provide the actual display text assigned to that face, not a Markdown file whose markup uses other fonts. Check fallback runs separately. The font option checks one selected font, not whether a renderer actually uses it. Expected strings are UTF-8 text with one non-empty string per line; whitespace is ignored for comparison, but punctuation, case, signs, and digits are retained. Use strings such as exact product labels, Chinese headings, and values; this is not a full semantic or translation comparison.
+Errors (exit 1): placeholders, chatbot residue, emoji, raw colours, packages
+that override the class. Warnings: padding words, Title Case or colon
+headings, manual spacing, size commands, straight quotes, three dots, spaced
+hyphens, units typed by hand, half-width punctuation in CJK text. Fix each
+warning or be able to say why it stands (a quoted UI string, a literal
+example).
 
-Exit status: 0 means no configured errors were detected; 1 means detected errors; 2 means an input, dependency, or parsing failure. Review warnings even when the exit status is zero. `--warnings-as-errors` makes reviewed warning categories enforceable in a build. JSON reports use `clear`, `review`, or `errors` and always state that visual review is still required. They do not certify the document.
-
-The helper detects invalid UTF-8, replacement/control characters, some leaked citation syntax, missing font glyphs, common mojibake candidates, unextractable PDF pages, missing expected strings, and extracted characters outside the visible page. It reports font embedding, Unicode-map, and document-structure signals. It does not alter files, run OCR, prove all fonts were embedded correctly, detect every overlap, validate scientific meaning, or establish accessibility compliance. Font-resource inventory can include unused resources; an unembedded unused font should be reviewed rather than assumed to have broken the output.
-
-## Render and inspect
-
-For PDF, use a renderer such as Poppler:
+## 2. Build and automatic checks
 
 ```sh
-pdftoppm -r 150 -png document.pdf work/page
-pdffonts document.pdf
-pdftotext -layout document.pdf work/extracted.txt
+python3 scripts/build.py document.tex --render out/ [--expect strings.txt]
 ```
 
-For DOCX, render/export through an available office engine. Inspect the exported pages and the editable file's styles and lists. A ZIP/XML check alone does not verify Word layout.
+Runs `latexmk -lualatex` (twice or more, until references settle) and then
+`check.py` on the log and the PDF:
 
-Inspect every final page at readable scale:
+| Finding | Level | Meaning |
+| --- | --- | --- |
+| `tex-error` | error | Compilation failed or recovered from an error |
+| `missing-glyph` | error | A character has no glyph in its font: it prints as nothing |
+| `overfull` | error | A line or box sticks into the margin by more than 0.5 pt |
+| `undefined-ref`, `undefined-cite` | error | A cross-reference or citation prints as ?? |
+| `not-embedded` | error | A font is not embedded in the PDF |
+| `missing-text` | error | A string from `--expect` is not in the extracted text |
+| `font-fallback` | warning | A fixed font was missing; the user must be told |
+| `no-label` | warning | A signal word or label is untranslated for a language |
+| `underfull` | warning | A very loose line (badness 10000) |
+| `no-tounicode`, `type3` | warning | Text may copy wrongly; a bitmap font slipped in |
 
-- All text visible; no tofu boxes, corrupt punctuation, accidental symbols, raw citations, or markup.
-- No overlap, clipping, content outside margins, or footer collisions.
-- Headings with their following content; procedures in a clear order; reasonable page breaks.
-- Table widths and wrapping work; continuation headers repeat; no tiny type to force a fit.
-- Symbols and numbers match the source, including signs, decimal places, and units.
-- Chinese font forms and punctuation suit the selected locale; line breaks do not strand closing punctuation.
-- Images and labels are sharp; captions and referents agree; links and page references work where applicable.
-- No empty packaging sections or decoration that has no reader-facing function.
-- Page composition suits the task: overview drawings, connection figures, procedure pairs, and reference tables use consistent grids and typography.
-- Callout numbers match their legends; leaders identify the intended feature; captions, links, bookmarks, and printed page references agree.
-- Diagrams and screenshots are large enough to use, not merely decorative thumbnails. Authoritative product details are preserved.
+Use `--expect` for facts that must survive exactly: model numbers, ratings,
+limits, part numbers, translated safety wording. One string per line.
 
-For a request for publication-quality manual design, also run the design acceptance review in [manual-design.md](manual-design.md). A zero-error preflight report does not establish a professional layout.
+## 3. Look at every page
 
-Keep the source, check report, and page images in a working directory until review is done. After a correction, regenerate from the source and inspect the final file again. If the exporter cannot meet a required quality check, explain that limitation instead of silently weakening the requirement.
+Open `out/contact.png` for the sequence, then each `out/page-NN.png` at
+reading size. Check:
 
-## Review record
+**Grid and type**
+- Text, numbers and labels sit on the grid: hanging numbers align, body text
+  starts on one edge, wide figures span the full measure.
+- No widow lines, no heading or step number alone at a page foot, no table
+  head without rows below it.
+- Line breaks inside names, numbers, units and model numbers (IEC 61010-1,
+  12.5 V) do not happen; use `\mbox` or `~` where they do.
+- Titles do not leave one word on the last line.
 
-Record internally: artifact name, source revision or hash, exporter and fonts, pages inspected, text checks, reviewed warnings, and unresolved issues. Only tell the user what they need to assess the deliverable. Do not insert a ceremonial QA checklist into every manual.
+**Figures**
+- Every callout number has a legend entry and every legend entry a callout.
+- Leaders end on the right feature, do not cross each other or text.
+- Labels in drawings are legible (at least 5 pt printed) and spelled as on
+  the product.
+- Charts: axes labelled with quantity and unit, series distinguishable in
+  greyscale.
+
+**Colour**
+- Only role colours appear. Render one page with `pdftoppm -gray` and check
+  that nothing depends on hue.
+
+**Language**
+- Each language uses its fixed fonts (the `Fonts` line of `check.py`).
+- CJK: punctuation is full-width and regional; no half-width commas in
+  Chinese text; no stray spaces typed between CJK and Latin text.
+- RTL: numbers, units and model names read left to right.
+- Thai: line breaks fall between words.
+
+**Content**
+- Every value matches the source. Every safety message has hazard,
+  consequence and avoidance, at the right level.
+- No placeholder, no "TBD", no invented contact or standard.
+
+Fix, rebuild, and look again at the pages that changed and the pages after
+them (pagination moves).
+
+## 4. Delivery note
+
+Tell the user, briefly: what was produced; any font fallback or user font;
+untranslated or unverified items; facts that were missing from the sources.
+Do not paste the check output.
+
+## Accessibility (tagged PDF)
+
+Tagged PDF output from LaTeX needs LuaLaTeX with TeX Live 2025 or newer, and
+the tagging code must be enabled before the class:
+
+```latex
+\DocumentMetadata{lang=en-GB, pdfversion=2.0, pdfstandard=ua-2, tagging=on}
+\documentclass{plaindoc}
+```
+
+This skill has not been validated for PDF/UA. If accessibility is a
+requirement, validate the result with a PDF/UA checker (for example veraPDF)
+and report the result; never claim conformance without it. Not every package
+the class loads supports tagging yet; see the LaTeX Project's tagging status
+page.

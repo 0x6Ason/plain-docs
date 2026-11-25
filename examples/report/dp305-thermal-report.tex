@@ -1,0 +1,148 @@
+% Test report -- example for the plaindoc class. All data are fictional.
+% Build: latexmk -lualatex dp305-thermal-report.tex
+\documentclass[type=report, lang=en-GB]{plaindoc}
+\usepackage[style=numeric-comp, sorting=none, maxbibnames=3]{biblatex}
+\addbibresource{refs.bib}
+
+\pdset{
+  org      = {Orrin Instruments · Product Engineering (fictional)},
+  title    = {DP305 thermal derating at full load},
+  subtitle = {Test report},
+  author   = {M. Chan, R. Okafor},
+  date     = {25 November 2026},
+  docid    = {TR-2026-041},
+  version  = {Rev. B},
+  status   = {Released},
+}
+
+\begin{document}
+\maketitle
+
+\begin{summary}
+At \qty{25}{\degreeCelsius} ambient the DP305 delivered \qty{30}{\volt} at
+\qty{5}{\ampere} for \qty{4}{\hour} without tripping over-temperature
+protection (OTP); the heatsink settled at \qty{71.4}{\degreeCelsius}. At
+\qty{40}{\degreeCelsius} ambient, OTP switched the output off after
+\qty{65}{\minute}. We recommend specifying full output up to
+\qty{35}{\degreeCelsius} and derating the current to \qty{4}{\ampere} at
+\qty{40}{\degreeCelsius}.
+\end{summary}
+
+\section{Scope}
+
+The DP305 user manual~\cite{dp305um} rates the supply for operation from
+\qtyrange{0}{40}{\degreeCelsius} but does not state whether full output is
+available across that range. This test measured the heatsink temperature at
+full output in three ambient temperatures and recorded whether OTP, which
+trips at \qty{85}{\degreeCelsius}, was reached.
+
+The test does not cover component lifetime or the touch-temperature limits
+of \mbox{IEC 61010-1}~\cite{iec61010}; those are assessed in TR-2026-044.
+
+\section{Method}
+
+One production unit (serial number 3051187) was placed in a climatic chamber
+and run at constant ambient temperature following the dry-heat procedure of
+\mbox{IEC 60068-2-2}~\cite{iec60068}. The output was set to \qty{30.00}{\volt} with a
+\qty{5.000}{\ampere} limit and loaded with an electronic load in constant-current
+mode. \Cref{tab:equipment} lists the equipment.
+
+\begin{table}
+\caption{Test equipment.}
+\label{tab:equipment}
+\begin{tabularx}{\linewidth}{@{}lL l@{}}
+\toprule
+\hd{Item} & \hd{Model and use} & \hd{Calibrated} \\
+\midrule
+Climatic chamber   & CT-150, ambient set point ±\qty{0.5}{\kelvin}       & 2026-03 \\
+Electronic load    & EL-600, constant current \qty{5.000}{\ampere}        & 2026-05 \\
+Thermocouples      & Type K, \num{4} channels, bonded with thermal epoxy  & 2026-05 \\
+Data logger        & DL-16, \qty{10}{\s} sample interval                  & 2026-05 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Thermocouples were placed on the heatsink next to the output transistor
+(TC1), on the transformer winding (TC2), at the air outlet (TC3) and in the
+chamber (TC4). Each run lasted \qty{4}{\hour} or until OTP tripped. The
+chamber was held at the set point for \qty{1}{\hour} before each run.
+
+\section{Results}
+
+\Cref{fig:heatsink} shows the heatsink temperature (TC1) for each ambient
+temperature. At \qty{25}{\degreeCelsius} and \qty{35}{\degreeCelsius} the
+temperature reached a steady state within \qty{90}{\minute}. At
+\qty{40}{\degreeCelsius} it rose past the OTP threshold, the output switched
+off at \qty{65}{\minute}, and the heatsink cooled towards ambient.
+
+\begin{figure}
+\centering
+\begin{tikzpicture}
+\begin{axis}[pd/axis, width=.8\linewidth, height=62mm, clip=false,
+    xmin=0, xmax=240, ymin=20, ymax=95, xtick={0,30,...,240},
+    xlabel={Time (min)}, ylabel={Heatsink temperature (°C)}]
+  \addplot+[domain=0:240, samples=49, mark repeat=4] {25+46.4*(1-exp(-x/22))};
+  \addplot+[domain=0:240, samples=49, mark repeat=4] {35+47.0*(1-exp(-x/22))};
+  \addplot+[domain=0:65, samples=14, mark repeat=4] {40+47.5*(1-exp(-x/22))};
+  \addplot+[oi-green, dotted, no marks, domain=65:240, samples=36, forget plot]
+    {40+45.0*exp(-(x-65)/30)};
+  \draw[pd-ink2, line width=.4pt, dash pattern=on 3pt off 2pt] (axis cs:0,85) -- (axis cs:240,85);
+  \node[anchor=south, font=\sffamily\scriptsize, text=pd-ink2] at (axis cs:165,85.5) {OTP threshold \qty{85}{\degreeCelsius}};
+  \node[anchor=south west, font=\sffamily\scriptsize] at (axis cs:67,86) {OTP trips};
+  \node[anchor=west, font=\sffamily\scriptsize] at (axis cs:244,71.4) {\qty{25}{\degreeCelsius} ambient};
+  \node[anchor=west, font=\sffamily\scriptsize] at (axis cs:244,82.0) {\qty{35}{\degreeCelsius} ambient};
+  \node[anchor=west, font=\sffamily\scriptsize, align=left] at (axis cs:244,41.5) {\qty{40}{\degreeCelsius} ambient\\[-1pt](output off)};
+\end{axis}
+\end{tikzpicture}
+\caption{Heatsink temperature (TC1) at \qty{30}{\volt}, \qty{5}{\ampere}.
+  After OTP trips the output is off and the heatsink cools.}
+\label{fig:heatsink}
+\end{figure}
+
+\Cref{tab:steady} gives the temperatures at the end of each run, or at the
+moment OTP tripped.
+
+\begin{table}
+\caption{Temperatures at the end of each run (°C).}
+\label{tab:steady}
+\begin{tabular*}{\linewidth}{@{\extracolsep{\fill}}lS[table-format=2.1]S[table-format=2.1]S[table-format=2.1]l@{}}
+\toprule
+\hd{Ambient} & {\hd{Heatsink (TC1)}} & {\hd{Transformer (TC2)}} & {\hd{Outlet air (TC3)}} & \hd{OTP} \\
+\midrule
+\qty{25}{\degreeCelsius} & 71.4 & 64.8 & 41.2 & No \\
+\qty{35}{\degreeCelsius} & 82.0 & 75.1 & 50.9 & No \\
+\qty{40}{\degreeCelsius} & 85.0 & 79.6 & 55.3 & After \qty{65}{\minute} \\
+\bottomrule
+\end{tabular*}
+\end{table}
+
+\section{Discussion}
+
+The heatsink sits about \qty{47}{\kelvin} above ambient at full load, in
+every run. With OTP at \qty{85}{\degreeCelsius}, full output is therefore
+sustainable up to about \qty{38}{\degreeCelsius} ambient; the
+\qty{35}{\degreeCelsius} run leaves a margin of \qty{3}{\kelvin}.
+Dissipation in the output stage scales with output current, so reducing
+the current to \qty{4}{\ampere} lowers the temperature rise to roughly
+\qty{38}{\kelvin}\footnote{Estimated from the measured rise of
+\qty{47}{\kelvin} at \qty{5}{\ampere}, assuming linear dependence on current
+at constant output voltage. A confirmation run is planned.} and keeps the
+heatsink below the threshold at \qty{40}{\degreeCelsius}.
+
+One unit was tested. Unit-to-unit variation in fan speed and heatsink
+contact could move the threshold by a few kelvin either way.
+
+\section{Recommendations}
+
+\begin{enumerate}
+\item State in the specifications that full output is available up to
+      \qty{35}{\degreeCelsius} ambient.
+\item Derate the output current linearly from \qty{5}{\ampere} at
+      \qty{35}{\degreeCelsius} to \qty{4}{\ampere} at \qty{40}{\degreeCelsius}.
+\item Repeat the \qty{40}{\degreeCelsius} run at \qty{4}{\ampere} on three
+      units before the datasheet is released.
+\end{enumerate}
+
+\printbibliography[heading=bibnumbered, title=References]
+
+\end{document}

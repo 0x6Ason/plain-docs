@@ -1,0 +1,113 @@
+% Technical drawings for the DP305 example manual.
+% Coordinates in millimetres. Line roles come from the pd/* TikZ styles.
+
+% Front panel. #1 = scale, #2 = 1 to draw callouts.
+\newcommand\dpfront[2][1]{%
+\begin{tikzpicture}[pd/drawing, x=#1mm, y=#1mm]
+  % feet and case
+  \foreach \x in {14,122} \draw[pd/detail, fill=pd-surface] (\x,-2.2) rectangle ++(14,2.2);
+  \draw[pd/part, rounded corners=3mm] (0,0) rectangle (150,66);
+  \draw[pd/detail, rounded corners=1.8mm] (3,3) rectangle (147,63);
+  % display window
+  \draw[pd/detail, fill=pd-surface, rounded corners=1.2mm] (8,28) rectangle (80,58);
+  \node[anchor=base east, font=\sffamily\fontsize{21}{21}\selectfont] at (58,45) {12.00};
+  \node[anchor=base west, font=\sffamily\fontsize{11}{11}\selectfont] at (59.5,45) {V};
+  \node[anchor=base east, font=\sffamily\fontsize{21}{21}\selectfont] at (58,32) {0.250};
+  \node[anchor=base west, font=\sffamily\fontsize{11}{11}\selectfont] at (59.5,32) {A};
+  \node[fill=pd-ink, text=white, inner sep=1pt, minimum width=7.5mm, font=\sffamily\fontsize{5.5}{5.5}\selectfont\bfseries] at (71.5,52.5) {CV};
+  \node[draw=pd-ink2, text=pd-ink2, inner sep=1pt, minimum width=7.5mm, line width=.3pt, font=\sffamily\fontsize{5.5}{5.5}\selectfont\bfseries] at (71.5,47) {CC};
+  \node[fill=pd-ink, text=white, inner sep=1pt, minimum width=7.5mm, font=\sffamily\fontsize{5.5}{5.5}\selectfont\bfseries] at (71.5,41.5) {OUT};
+  \node[draw=pd-ink2, text=pd-ink2, inner sep=1pt, minimum width=7.5mm, line width=.3pt, font=\sffamily\fontsize{5.5}{5.5}\selectfont\bfseries] at (71.5,36) {LOCK};
+  % power switch
+  \draw[pd/detail, rounded corners=.8mm] (9,8) rectangle (23,20);
+  \draw[pd/detail, fill=pd-surface, rounded corners=.5mm] (11,10) rectangle (21,18);
+  \node[pd/label, font=\sffamily\fontsize{5}{5}\selectfont] at (16,23) {POWER};
+  % keys
+  \foreach \x/\t in {32/LIMIT, 49/LOCK, 66/OUTPUT}{
+    \draw[pd/detail, rounded corners=.8mm] (\x,9) rectangle ++(14,8);
+    \node[font=\sffamily\fontsize{5}{5}\selectfont\bfseries] at (\x+7,13) {\t};}
+  \fill[pd-ink] (73,20.5) circle (.9);
+  % knobs
+  \foreach \cx/\t in {98/VOLTAGE, 126/CURRENT}{
+    \node[pd/label, font=\sffamily\fontsize{5}{5}\selectfont] at (\cx,30.2) {\t};
+    \draw[pd/detail] (\cx,43) circle (10);
+    \draw[pd/part] (\cx,43) circle (8);
+    \draw[pd/detail] (\cx,43) circle (6.2);
+    \draw[pd/detail, line width=.8pt] (\cx,46.5) -- (\cx,50);}
+  % output terminals
+  \foreach \tx/\t in {100/+, 117/−, 134/GND}{
+    \draw[pd/part] (\tx,15) circle (4.4);
+    \draw[pd/detail, fill=pd-surface] (\tx,15) circle (2.1);
+    \node[pd/label, font=\sffamily\fontsize{6}{6}\selectfont\bfseries] at (\tx,23) {\t};}
+  \ifnum#2=1
+    \pdcallout{1}{(30,58)}{(30,76)}
+    \pdcallout{2}{(98,53)}{(98,76)}
+    \pdcallout{3}{(126,53)}{(126,76)}
+    \pdcallout{4}{(39,9)}{(39,-11)}
+    \pdcallout{5}{(56,9)}{(56,-11)}
+    \pdcallout{6}{(73,9)}{(73,-11)}
+    \draw[pd/leader] (100,10.6) -- (100,7) -- (117,7) -- (117,10.6);
+    \pdcallout{7}{(108.5,7)}{(108.5,-11)}
+    \pdcallout{8}{(134,10.6)}{(134,-11)}
+    \pdcallout{9}{(16,8)}{(16,-11)}
+  \fi
+\end{tikzpicture}}
+
+% Rear panel with callouts.
+\newcommand\dprear{%
+\begin{tikzpicture}[pd/drawing, x=1mm, y=1mm]
+  \foreach \x in {14,122} \draw[pd/detail, fill=pd-surface] (\x,-2.2) rectangle ++(14,2.2);
+  \draw[pd/part, rounded corners=3mm] (0,0) rectangle (150,66);
+  \draw[pd/detail, rounded corners=1.8mm] (3,3) rectangle (147,63);
+  % fan grille
+  \draw[pd/detail] (38,33) circle (21);
+  \foreach \r in {16,11,6} \draw[pd/detail] (38,33) circle (\r);
+  \draw[pd/detail] (17,33) -- (59,33) (38,12) -- (38,54);
+  \fill[pd-ink] (38,33) circle (2.2);
+  % rating plate
+  \draw[pd/detail] (70,44) rectangle (98,58);
+  \foreach \y in {54.5,51.5,48.5} \draw[pd-rule, line width=1.1pt] (73,\y) -- (95,\y);
+  % USB-C
+  \draw[pd/part, rounded corners=1.4mm] (118,50) rectangle ++(10,3.6);
+  \node[pd/label, font=\sffamily\fontsize{5}{5}\selectfont] at (123,57.5) {USB};
+  % AC inlet (IEC 60320 C14)
+  \draw[pd/part, rounded corners=1mm] (106,20) rectangle (132,40);
+  \draw[pd/detail, fill=pd-surface] (110,24) -- (128,24) -- (128,33) -- (125,36) -- (113,36) -- (110,33) -- cycle;
+  \foreach \px/\py in {113.5/28.5, 124.5/28.5, 119/32.5} \fill[pd-ink] (\px-1,\py-1.6) rectangle ++(2,3.2);
+  % fuse drawer
+  \draw[pd/detail, rounded corners=.6mm] (110,9) rectangle (128,16);
+  \draw[pd/detail] (116,12.5) -- (122,12.5);
+  \node[pd/label, font=\sffamily\fontsize{4.6}{4.6}\selectfont] at (119,5.6) {T3.15AL 250V};
+  \pdcallout{1}{(38,54)}{(38,76)}
+  \pdcallout{2}{(84,58)}{(84,76)}
+  \pdcallout{3}{(123,53.6)}{(123,76)}
+  \pdcallout{4}{(132,30)}{(158,30)}
+  \pdcallout{5}{(128,12.5)}{(158,12.5)}
+\end{tikzpicture}}
+
+% Connection: supply terminals to a load, current direction shown.
+\newcommand\dpconnect{%
+\begin{tikzpicture}[pd/drawing, x=1mm, y=1mm]
+  % supply (terminal strip)
+  \draw[pd/part, rounded corners=1.5mm] (0,0) rectangle (52,30);
+  \node[pd/label, anchor=north west] at (3,28) {DP305};
+  \foreach \tx/\t in {12/+, 28/−, 44/GND}{
+    \draw[pd/part] (\tx,11) circle (4.4);
+    \draw[pd/detail, fill=pd-surface] (\tx,11) circle (2.1);
+    \node[pd/label, font=\sffamily\fontsize{6}{6}\selectfont\bfseries] at (\tx,20) {\t};}
+  % load
+  \draw[pd/part, rounded corners=1.5mm] (100,-4) rectangle (140,34);
+  \node[pd/label] at (120,28) {Load};
+  \draw[pd/detail] (120,4) -- (120,8);
+  \draw[pd/part, fill=white] (116,8) rectangle (124,22);
+  \draw[pd/detail] (120,22) -- (120,26);
+  \node[font=\sffamily\fontsize{4.6}{4.6}\selectfont, anchor=west] at (125,15) {max.\ 5\,A};
+  % wires
+  \draw[line width=1.3pt, pd-ink] (12,11) -- (12,-12) -- (90,-12) -- (90,26) -- (120,26);
+  \draw[line width=1.3pt, pd-ink, dash pattern=on 4pt off 1.6pt] (28,11) -- (28,-20) -- (95,-20) -- (95,4) -- (120,4);
+  \foreach \p in {(12,11),(28,11),(120,26),(120,4)} \fill[pd-ink] \p circle (.9);
+  \node[font=\sffamily\fontsize{5.5}{5.5}\selectfont, anchor=south] at (60,-12) {positive lead};
+  \node[font=\sffamily\fontsize{5.5}{5.5}\selectfont, anchor=north] at (60,-20) {negative lead};
+  \draw[pd/dim, ->] (64,-7.5) -- (80,-7.5);
+  \node[font=\sffamily\fontsize{5}{5}\selectfont, text=pd-ink2, anchor=west] at (81,-7.5) {I};
+\end{tikzpicture}}

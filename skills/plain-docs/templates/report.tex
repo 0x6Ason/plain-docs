@@ -1,0 +1,35 @@
+% Report: test report, technical report, study, proposal.
+% Build with scripts/build.py. Lead with the finding; support it after.
+\documentclass[type=report, lang=en-GB]{plaindoc}   % add `chapters` for long reports
+% \usepackage[style=numeric-comp, sorting=none]{biblatex}
+% \addbibresource{refs.bib}
+
+\pdset{
+  org      = {},
+  title    = {},          % says what was found or decided, not just the topic
+  subtitle = {},
+  author   = {},
+  date     = {},
+  docid    = {},
+  version  = {},
+  status   = {},          % Draft / For review / Released
+}
+
+\begin{document}
+\maketitle
+
+\begin{summary}
+% Three to five sentences: what was done, what was found (with numbers),
+% what you recommend.
+\end{summary}
+
+\section{Scope}
+\section{Method}
+\section{Results}
+% Figures: \begin{axis}[pd/axis] ... Okabe–Ito colours and marks come from the class.
+\section{Discussion}
+% Limits of the evidence belong here, stated once and specifically.
+\section{Recommendations}
+
+% \printbibliography[heading=bibnumbered, title=References]
+\end{document}
