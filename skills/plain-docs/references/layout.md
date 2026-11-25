@@ -7,7 +7,10 @@
 sits in the index column: chapter and section numbers, step numbers, figure
 and table labels, the *Note* label. Everything to be read sits in the body
 column. The reader scans down the left edge to find a place and reads to the
-right. Wide figures and tables (`\pdwide`) span both columns.
+right. Wide figures and tables (`\pdwide`) span both columns. The contents
+page follows the same rule: numbers in the index column, titles on the text
+edge. The layout is deliberately asymmetric; do not centre the text block or
+centre-align text to "balance" a page.
 
 **Report and memo (A4).** One 130 mm column with 40 mm margins. Section numbers,
 figure labels and the *Summary* label hang into the left margin so that every

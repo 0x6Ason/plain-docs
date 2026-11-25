@@ -830,20 +830,36 @@
   {\par\vspace{.5\baselineskip}}
 
 % ==================================================================
-% Contents: no dot leaders, numbers in a fixed column.
+% Contents: numbers hang in the index column (manual) or the margin
+% (report, memo), exactly like the headings they point to; titles start
+% on the text edge. No dot leaders.
 % ==================================================================
+\newlength\pd@tochang
+\pd@iftype{manual}{\setlength\pd@tochang{\pd@hang}}{\setlength\pd@tochang{14mm}}
+\newcommand\pd@tocnum[1]{\hfill#1\hspace{\pd@numgap}}
+\edef\pd@tocin{-\the\pd@tochang}\edef\pd@tocnw{\the\pd@tochang}
 \pd@ifchapters{%
-  \DeclareTOCStyleEntry[beforeskip=.7\baselineskip, entryformat=\pd@sffont\bfseries,
-    pagenumberformat=\pd@sffont\bfseries, linefill=\hfill, numwidth=8mm]{tocline}{chapter}
-  \DeclareTOCStyleEntry[indent=8mm, numwidth=10mm, linefill=\hfill,
-    entryformat=\pd@sffont, pagenumberformat=\pd@sffont]{tocline}{section}
-  \DeclareTOCStyleEntry[indent=18mm, numwidth=12mm, linefill=\hfill,
-    entryformat=\pd@sffont\color{pd-ink2}, pagenumberformat=\pd@sffont\color{pd-ink2}]{tocline}{subsection}
+  \DeclareTOCStyleEntry[beforeskip=.8\baselineskip, indent=\pd@tocin,
+    numwidth=\pd@tocnw, dynnumwidth=false, entrynumberformat=\pd@tocnum,
+    entryformat=\pd@sffont\bfseries, pagenumberformat=\pd@sffont\bfseries,
+    linefill=\hfill]{tocline}{chapter}
+  \DeclareTOCStyleEntry[indent=\pd@tocin, numwidth=\pd@tocnw,
+    dynnumwidth=false, entrynumberformat=\pd@tocnum,
+    entryformat=\pd@sffont, pagenumberformat=\pd@sffont,
+    linefill=\hfill]{tocline}{section}
+  \DeclareTOCStyleEntry[indent=\pd@tocin, numwidth=\pd@tocnw,
+    dynnumwidth=false, entrynumberformat=\pd@tocnum,
+    entryformat=\pd@sffont\color{pd-ink2}, pagenumberformat=\pd@sffont\color{pd-ink2},
+    linefill=\hfill]{tocline}{subsection}
 }{%
-  \DeclareTOCStyleEntry[beforeskip=.4\baselineskip, numwidth=8mm, linefill=\hfill,
-    entryformat=\pd@sffont\bfseries, pagenumberformat=\pd@sffont\bfseries]{tocline}{section}
-  \DeclareTOCStyleEntry[indent=8mm, numwidth=10mm, linefill=\hfill,
-    entryformat=\pd@sffont, pagenumberformat=\pd@sffont]{tocline}{subsection}
+  \DeclareTOCStyleEntry[beforeskip=.4\baselineskip, indent=\pd@tocin,
+    numwidth=\pd@tocnw, dynnumwidth=false, entrynumberformat=\pd@tocnum,
+    entryformat=\pd@sffont\bfseries, pagenumberformat=\pd@sffont\bfseries,
+    linefill=\hfill]{tocline}{section}
+  \DeclareTOCStyleEntry[indent=\pd@tocin, numwidth=\pd@tocnw,
+    dynnumwidth=false, entrynumberformat=\pd@tocnum,
+    entryformat=\pd@sffont, pagenumberformat=\pd@sffont,
+    linefill=\hfill]{tocline}{subsection}
 }
 
 % ==================================================================
