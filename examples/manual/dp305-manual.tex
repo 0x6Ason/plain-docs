@@ -1,0 +1,373 @@
+% DP305 user manual -- example for the plaindoc class.
+% Orrin Instruments and the DP305 are fictional. Build: latexmk -lualatex dp305-manual.tex
+\documentclass[type=manual, lang=en-GB, otherlangs={zh-HK}]{plaindoc}
+
+\pdset{
+  brand    = {Orrin Instruments},
+  title    = {DP305 Bench Power Supply},
+  subtitle = {User manual},
+  product  = {DP305},
+  doctype  = {User manual},
+  docid    = {DP305-UM-EN},
+  version  = {Version 1.2},
+  date     = {25 November 2026},
+  org      = {Orrin Instruments is a fictional company. The DP305 and its
+              specifications exist only to demonstrate the plaindoc class.},
+}
+\input{dp305-figures}
+\pdcover{\centering\dpfront[1.05]{0}}
+
+\begin{document}
+\maketitle
+\tableofcontents
+
+% ------------------------------------------------------------------
+\chapter{About this manual}
+
+This manual describes how to set up and operate the DP305, a single-output
+laboratory power supply rated \qtyrange{0}{30}{\volt} and \qtyrange{0}{5}{\ampere}.
+It is written for people who connect the supply to electronic circuits and
+assumes basic knowledge of voltage, current and polarity.
+
+\section{Conventions}
+
+\begin{tabularx}{\linewidth}{@{}P{30mm}L@{}}
+\toprule
+\hd{Notation} & \hd{Meaning} \\
+\midrule
+\key{OUTPUT}   & A key on the front panel. \\
+\ui{VOLTAGE}   & A label printed on the instrument or shown on the display. \\
+\menu{System>Interface} & A menu path: open \ui{System}, then select \ui{Interface}. \\
+\cmd{MEAS:VOLT?} & A remote command, typed exactly as shown. \\
+→ & The result you should see after a step. \\
+\bottomrule
+\end{tabularx}
+
+\section{Related documents}
+
+The \emph{DP305 Programming Reference} (DP305-PR-EN) lists every remote
+command. The \emph{DP305 Service Manual} (DP305-SM-EN) is for qualified
+service personnel only.
+
+% ------------------------------------------------------------------
+\chapter{Safety}
+
+Read this chapter before you connect the DP305 to mains power or to a load.
+Safety messages in later chapters repeat the hazards that apply to a
+specific step.
+
+\section{Safety messages}
+
+Each safety message starts with a signal word. The signal word tells you how
+serious the hazard is.
+
+\begin{tabularx}{\linewidth}{@{}P{30mm}L@{}}
+\toprule
+\hd{Signal word} & \hd{Meaning} \\
+\midrule
+DANGER  & A hazardous situation that \emph{will} cause death or serious injury if not avoided. \\
+WARNING & A hazardous situation that \emph{could} cause death or serious injury if not avoided. \\
+CAUTION & A hazardous situation that could cause minor or moderate injury if not avoided. \\
+NOTICE  & A situation that could damage the instrument, the load or data. No personal injury. \\
+\bottomrule
+\end{tabularx}
+
+\section{Before you use the DP305}
+
+\begin{safety}{warning}[Electric shock from damaged mains connections]
+A damaged power cord or inlet can expose mains voltage.
+\begin{itemize}
+\item Use only the supplied power cord, or one rated for at least
+      \qty{250}{\volt} and \qty{10}{\ampere} with a protective earth conductor.
+\item Do not use the DP305 if the cord, inlet or case is damaged.
+\end{itemize}
+\end{safety}
+
+\begin{safety}{caution}[Burns from wires and loads]
+At \qty{5}{\ampere}, thin wires and some loads become hot enough to burn skin.
+Use wires with a cross-section of at least \qty{1.0}{\mm\squared}.
+Switch the output off and let the load cool before you touch it.
+\end{safety}
+
+\begin{safety}{notice}
+Blocking the fan or the side vents makes the DP305 switch its output off
+through over-temperature protection. Keep \qty{10}{\cm} of free space
+behind the instrument.
+\end{safety}
+
+\section{Intended use}
+
+The DP305 supplies DC power to electronic circuits in laboratories, schools
+and workshops. Do not use it to charge batteries, to power medical devices
+connected to a person, or in wet or explosive environments.
+
+% ------------------------------------------------------------------
+\chapter{Product overview}
+
+\section{Front panel}
+
+\begin{figure}[h]
+\pdwide{\centering\dpfront{1}}
+\caption{Front panel. Numbers refer to the list below.}
+\label{fig:front}
+\end{figure}
+
+\begin{pdlegend}
+\legenditem{1}{Display}{Output voltage and current, mode and status indicators.}
+\legenditem{2}{VOLTAGE knob}{Sets the output voltage in \qty{10}{\mV} steps. Press to switch to \qty{1}{\volt} steps.}
+\legenditem{3}{CURRENT knob}{Sets the current limit while \key{LIMIT} is active.}
+\legenditem{4}{LIMIT key}{Shows the set values instead of the measured values.}
+\legenditem{5}{LOCK key}{Locks the knobs and keys. Hold for \qty{2}{\s} to unlock.}
+\legenditem{6}{OUTPUT key}{Switches the output on or off. The lamp above it lights while the output is on.}
+\legenditem{7}{Output terminals}{Positive (+) and negative (−) terminals. Accept \qty{4}{\mm} plugs, spade lugs and bare wire.}
+\legenditem{8}{GND terminal}{Connected to protective earth. Not connected to the output.}
+\legenditem{9}{POWER switch}{Switches the instrument on or off. The output always starts off.}
+\end{pdlegend}
+
+\section{Display indicators}
+
+\begin{tabularx}{\linewidth}{@{}P{16mm}L@{}}
+\toprule
+\hd{Indicator} & \hd{Meaning} \\
+\midrule
+\textbf{CV}   & Constant voltage. The output voltage equals the set value. \\
+\textbf{CC}   & Constant current. The load draws the current limit, so the voltage is lower than set. \\
+\textbf{OUT}  & The output is on. \\
+\textbf{LOCK} & The front panel is locked. \\
+\textbf{OTP}  & Over-temperature protection switched the output off. See \cref{ch:trouble}. \\
+\bottomrule
+\end{tabularx}
+
+\section{Rear panel}
+
+\begin{figure}[h]
+\pdwide{\centering\dprear}
+\caption{Rear panel.}
+\label{fig:rear}
+\end{figure}
+
+\begin{pdlegend}
+\legenditem{1}{Fan outlet}{Keep clear. The fan runs faster as the load increases.}
+\legenditem{2}{Rating plate}{Serial number and mains rating.}
+\legenditem{3}{USB-C port}{Remote control. Does not power the DP305.}
+\legenditem{4}{Mains inlet}{IEC 60320 C14 inlet for the power cord.}
+\legenditem{5}{Fuse drawer}{Holds the mains fuse, T3.15AL 250V, and one spare.}
+\end{pdlegend}
+
+% ------------------------------------------------------------------
+\chapter{Setting up}
+
+\section{Before you begin}
+
+You need:
+\begin{itemize}
+\item a mains socket with protective earth, \qtyrange{100}{240}{\volt} AC, \qty{50}{\Hz} or \qty{60}{\Hz};
+\item test leads rated for at least \qty{5}{\ampere};
+\item the voltage and current your load needs, from its documentation.
+\end{itemize}
+
+\section{Switch on}
+
+\begin{steps}
+\item Place the DP305 on a flat surface with \qty{10}{\cm} of free space behind it.
+\item Connect the power cord to the mains inlet and to an earthed socket.
+\item Press the \ui{POWER} switch.
+      \result{The display shows the last set values. The \ui{OUT} indicator is off.}
+\end{steps}
+
+\section{Connect a load}
+\label{sec:connect}
+
+\begin{figure}[h]
+\pdwide{\centering\dpconnect}
+\caption{Connect the positive lead first and disconnect it last.}
+\label{fig:connect}
+\end{figure}
+
+\begin{safety}{caution}[Reversed polarity]
+Many loads are damaged when + and − are swapped. Check the polarity marking
+on the load before you connect it.
+\end{safety}
+
+\begin{steps}
+\item If \ui{OUT} is lit, press \key{OUTPUT} to switch the output off.
+\item Set the voltage and current limit before connecting (see \cref{sec:set}).
+\item Connect the positive lead from the + terminal to the positive input of the load.
+\item Connect the negative lead from the − terminal to the negative input of the load.
+\item Press \key{OUTPUT}.
+      \result{\ui{OUT} lights. The display shows the measured voltage and current.}
+\end{steps}
+
+\begin{note}
+The GND terminal is not part of the output circuit. Connect it to the load
+only if the load's documentation asks for an earth connection.
+\end{note}
+
+% ------------------------------------------------------------------
+\chapter{Operation}
+
+\section{Set voltage and current limit}
+\label{sec:set}
+
+\begin{steps}
+\item Press \key{LIMIT}.
+      \result{The display shows the set values. \ui{CV} and \ui{CC} go off.}
+\item Turn the \ui{VOLTAGE} knob to the voltage your load needs.
+\item Turn the \ui{CURRENT} knob to the highest current the load should draw.
+\item Press \key{LIMIT} again, or wait \qty{5}{\s}.
+      \result{The display returns to the measured values.}
+\end{steps}
+
+\begin{note}
+Set the current limit just above the load's normal current. If a fault
+occurs, the DP305 then limits the current before the load is damaged.
+\end{note}
+
+\section{Constant voltage and constant current}
+
+The DP305 changes between the two modes by itself. While the load draws less
+than the current limit, the supply holds the voltage (\ui{CV}). When the load
+tries to draw more, the supply holds the current and lowers the voltage
+(\ui{CC}).
+
+\begin{tabularx}{\linewidth}{@{}P{24mm}LL@{}}
+\toprule
+\hd{Indicator} & \hd{What is happening} & \hd{What to do} \\
+\midrule
+\textbf{CV} & Normal operation. & Nothing. \\
+\textbf{CC} & The load needs more current than the limit, or it is short-circuited. &
+  Check the load. Raise the limit only if the load is rated for the higher current. \\
+\bottomrule
+\end{tabularx}
+
+\section{Lock the front panel}
+
+Press \key{LOCK}. \ui{LOCK} appears and the knobs and keys stop responding,
+except \key{OUTPUT}, which can still switch the output off. Hold \key{LOCK}
+for \qty{2}{\s} to unlock.
+
+\section{Remote control over USB}
+
+The DP305 appears as a virtual serial port. Commands follow SCPI syntax and
+end with a line feed.
+
+\begin{tabularx}{\linewidth}{@{}P{34mm}L@{}}
+\toprule
+\hd{Command} & \hd{Function} \\
+\midrule
+\cmd{*IDN?}          & Returns manufacturer, model, serial number and firmware version. \\
+\cmd{VOLT <value>}   & Sets the output voltage in volts. \\
+\cmd{CURR <value>}   & Sets the current limit in amperes. \\
+\cmd{OUTP ON|OFF}    & Switches the output on or off. \\
+\cmd{MEAS:VOLT?}     & Returns the measured output voltage. \\
+\cmd{MEAS:CURR?}     & Returns the measured output current. \\
+\bottomrule
+\end{tabularx}
+
+Example session (sent lines start with \cmd{>}):
+\begin{code}
+> VOLT 5.00
+> CURR 0.200
+> OUTP ON
+> MEAS:CURR?
+0.1482
+\end{code}
+
+% ------------------------------------------------------------------
+\chapter{Troubleshooting}
+\label{ch:trouble}
+
+\begin{xltabular}{\linewidth}{@{}P{36mm}LL@{}}
+\toprule
+\hd{Symptom} & \hd{Possible cause} & \hd{Action} \\
+\midrule
+\endhead
+Display stays dark. & No mains power, or the fuse has blown. &
+  Check the socket and cord. Replace the fuse with the spare in the fuse drawer. \\
+\addlinespace
+\ui{CC} lights and the voltage is low. & The load draws the current limit. &
+  Check the load for a short circuit. Raise the limit if the load needs it. \\
+\addlinespace
+\ui{OTP} lights and the output is off. & The DP305 is too hot. &
+  Clear the fan outlet and vents. Wait \qty{10}{\minute}, then press \key{OUTPUT}. \\
+\addlinespace
+Knobs do nothing. & The front panel is locked. & Hold \key{LOCK} for \qty{2}{\s}. \\
+\addlinespace
+No serial port on the computer. & Charge-only USB cable, or no driver. &
+  Use a USB data cable. The port uses the standard CDC-ACM driver. \\
+\bottomrule
+\end{xltabular}
+
+If none of these actions helps, note the serial number from the rating plate
+and the firmware version from \cmd{*IDN?}, then contact your supplier.
+
+% ------------------------------------------------------------------
+\chapter{Specifications}
+
+Values apply after \qty{30}{\minute} of warm-up at \qtyrange{18}{28}{\degreeCelsius}.
+
+\begin{xltabular}{\linewidth}{@{}LP{58mm}@{}}
+\toprule
+\hd{Parameter} & \hd{Value} \\
+\midrule
+\endhead
+\pdgroup{Output}
+Voltage                      & \qtyrange{0}{30}{\volt} \\
+Current                      & \qtyrange{0}{5}{\ampere} \\
+Setting resolution           & \qty{10}{\mV}, \qty{1}{\mA} \\
+Voltage accuracy             & ±(\qty{0.05}{\percent} + \qty{10}{\mV}) \\
+Current accuracy             & ±(\qty{0.1}{\percent} + \qty{5}{\mA}) \\
+Ripple and noise (\qty{20}{\Hz} to \qty{20}{\MHz}) & ≤ \qty{1}{\mV} rms \\
+Load regulation              & ≤ \qty{0.01}{\percent} + \qty{2}{\mV} \\
+\addlinespace
+\pdgroup{Mains supply}
+Voltage                      & \qtyrange{100}{240}{\volt} AC, \qtylist{50;60}{\Hz} \\
+Power consumption            & ≤ \qty{250}{\volt\ampere} \\
+Fuse                         & T3.15AL 250V, \qtyproduct{5 x 20}{\mm} \\
+\addlinespace
+\pdgroup{General}
+Interface                    & USB-C (USB 2.0, CDC-ACM), SCPI \\
+Dimensions (W × H × D)       & \qtyproduct{215 x 90 x 260}{\mm} \\
+Mass                         & \qty{3.1}{\kg} \\
+Operating temperature        & \qtyrange{0}{40}{\degreeCelsius} \\
+Storage temperature          & \qtyrange{-20}{60}{\degreeCelsius} \\
+\bottomrule
+\end{xltabular}
+
+% ------------------------------------------------------------------
+\begin{lang}{zh-HK}
+\chapter{快速參考（繁體中文）}
+
+本章摘要 DP305 的基本操作。開始前，請先閱讀第 2 章的安全資訊。
+
+\begin{safety}{warning}[輸出端子帶有危險能量]
+輸出端子最高可提供 \qty{30}{\volt}、\qty{5}{\ampere}。短路會令導線發熱，並可能導致灼傷。
+連接或拆除負載前，請先按 \key{OUTPUT} 關閉輸出。
+\end{safety}
+
+\section{設定並開啟輸出}
+
+\begin{steps}
+\item 按下 \ui{POWER} 開關。
+      \result{顯示屏顯示上次的設定值，輸出保持關閉。}
+\item 按 \key{LIMIT}，然後轉動 \ui{VOLTAGE} 旋鈕設定電壓。
+\item 轉動 \ui{CURRENT} 旋鈕，設定負載可承受的最大電流。
+\item 將正極導線接到 + 端子，負極導線接到 − 端子。
+\item 按 \key{OUTPUT}。
+      \result{\ui{OUT} 指示燈亮起，顯示屏顯示實際電壓及電流。}
+\end{steps}
+
+\section{指示燈}
+
+\begin{tabularx}{\linewidth}{@{}P{16mm}L@{}}
+\toprule
+\hd{指示燈} & \hd{意思} \\
+\midrule
+\textbf{CV}  & 定電壓：輸出電壓等於設定值。 \\
+\textbf{CC}  & 定電流：負載電流已達上限，因此電壓低於設定值。請檢查負載是否短路。 \\
+\textbf{OTP} & 過熱保護：輸出已關閉。清除通風口的阻擋物，等候 \qty{10}{\minute} 後再按 \key{OUTPUT}。 \\
+\bottomrule
+\end{tabularx}
+\end{lang}
+
+\end{document}

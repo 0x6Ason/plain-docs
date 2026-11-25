@@ -1,0 +1,46 @@
+% Language and font specimen for the plaindoc class.
+% CJK regions: fixed fonts, punctuation metrics, number format and quotes.
+% Build: latexmk -lualatex language-specimen.tex
+\documentclass[type=report, lang=en-GB, otherlangs={zh-HK, zh-TW, zh-CN, ja, ko}]{plaindoc}
+
+\pdset{
+  title    = {CJK font specimen},
+  subtitle = {Chinese (Hong Kong, Taiwan, mainland), Japanese and Korean},
+  org      = {Plain Docs},
+  date     = {25 November 2026},
+}
+
+\usepackage{needspace}
+% #1 tag, #2 fonts (serif / sans), #3 sentence
+\newcommand\sample[3]{%
+  \par\addvspace{.7\baselineskip}\needspace{6\baselineskip}\pdlabel{\texttt{#1}}%
+  {\sffamily\footnotesize\color{pd-ink2}#2}\par\nopagebreak
+  \begin{lang}{#1}#3\par{\sffamily #3}\par
+  {\footnotesize\num{1234567.89}\quad\qty{12.5}{\volt}\quad\pdq{OUTPUT}}\end{lang}}
+
+\begin{document}
+\maketitle
+
+Each entry shows the same instruction (\enquote{Switch off the output before
+you connect the load.}) in the serif and the sans face fixed for that region.
+Regional glyph forms differ: compare 連, 關 and 輸 across the Hong Kong,
+Taiwan and mainland faces, and the position of the full stop and comma.
+Translations are for typesetting tests only.
+
+\sample{zh-HK}{Noto Serif CJK HK / Noto Sans CJK HK}{連接負載前，請先關閉輸出。}
+\sample{zh-TW}{Noto Serif CJK TC / Noto Sans CJK TC}{連接負載前，請先關閉輸出。}
+\sample{zh-CN}{Noto Serif CJK SC / Noto Sans CJK SC}{连接负载前，请先关闭输出。}
+\sample{ja}{Noto Serif CJK JP / Noto Sans CJK JP}{負荷を接続する前に、出力をオフにしてください。}
+\sample{ko}{Noto Serif CJK KR / Noto Sans CJK KR}{부하를 연결하기 전에 출력을 끄세요.}
+
+\section*{Mixed text}
+
+\begin{lang}{zh-HK}
+在 DP305 上按 \key{OUTPUT} 前，先把電流限制設為 \qty{0.5}{\ampere}。顯示屏會顯示 \ui{CV}——即定電壓模式……如果顯示 \ui{CC}，請檢查負載。
+\end{lang}
+
+\begin{lang}{ja}
+DP305 の \key{OUTPUT} を押す前に、電流制限を \qty{0.5}{\ampere} に設定してください。表示が \ui{CC} の場合は、負荷を確認してください。
+\end{lang}
+
+\end{document}

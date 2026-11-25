@@ -1,0 +1,61 @@
+% Language and font specimen for the plaindoc class.
+% Every supported language tag, its fixed fonts, number format and quotes.
+% Build: latexmk -lualatex language-specimen.tex
+\documentclass[type=report, lang=en-GB, otherlangs={en-US, fr, de, es, it, pt-BR,
+  pt-PT, nl, pl, tr, vi, id, ru, uk, el, ar, he, hi, th}]{plaindoc}
+
+\pdset{
+  title    = {Language and font specimen},
+  subtitle = {Latin, Cyrillic, Greek, Arabic, Hebrew, Devanagari and Thai scripts},
+  org      = {Plain Docs},
+  date     = {25 November 2026},
+}
+
+\usepackage{needspace}
+% #1 tag, #2 fonts (serif / sans), #3 sentence
+\newcommand\sample[3]{%
+  \par\addvspace{.7\baselineskip}\needspace{6\baselineskip}\pdlabel{\texttt{#1}}%
+  {\sffamily\footnotesize\color{pd-ink2}#2}\par\nopagebreak
+  \begin{lang}{#1}#3\par{\sffamily #3}\par
+  {\footnotesize\num{1234567.89}\quad\qty{12.5}{\volt}\quad\pdq{OUTPUT}}\end{lang}}
+
+\begin{document}
+\maketitle
+
+Each entry shows the same instruction (\enquote{Switch off the output before
+you connect the load.}) in the serif and the sans face fixed for that
+language, followed by a number, a quantity and a quoted UI label formatted
+for the language. Translations are for typesetting tests; have a qualified
+translator review real content.
+
+\sample{en-GB}{STIX Two Text / IBM Plex Sans}{Switch off the output before you connect the load.}
+\sample{en-US}{STIX Two Text / IBM Plex Sans}{Turn off the output before you connect the load.}
+\sample{fr}{STIX Two Text / IBM Plex Sans}{Désactivez la sortie avant de brancher la charge.}
+\sample{de}{STIX Two Text / IBM Plex Sans}{Schalten Sie den Ausgang aus, bevor Sie die Last anschließen.}
+\sample{es}{STIX Two Text / IBM Plex Sans}{Desactive la salida antes de conectar la carga.}
+\sample{it}{STIX Two Text / IBM Plex Sans}{Disattivare l’uscita prima di collegare il carico.}
+\sample{pt-BR}{STIX Two Text / IBM Plex Sans}{Desligue a saída antes de conectar a carga.}
+\sample{pt-PT}{STIX Two Text / IBM Plex Sans}{Desligue a saída antes de ligar a carga.}
+\sample{nl}{STIX Two Text / IBM Plex Sans}{Schakel de uitgang uit voordat u de belasting aansluit.}
+\sample{pl}{STIX Two Text / IBM Plex Sans}{Wyłącz wyjście przed podłączeniem obciążenia.}
+\sample{tr}{STIX Two Text / IBM Plex Sans}{Yükü bağlamadan önce çıkışı kapatın.}
+\sample{vi}{STIX Two Text / IBM Plex Sans}{Tắt đầu ra trước khi kết nối tải.}
+\sample{id}{STIX Two Text / IBM Plex Sans}{Matikan keluaran sebelum menghubungkan beban.}
+\sample{ru}{STIX Two Text / IBM Plex Sans}{Отключите выход перед подключением нагрузки.}
+\sample{uk}{STIX Two Text / IBM Plex Sans}{Вимкніть вихід перед підключенням навантаження.}
+\sample{el}{Noto Serif / IBM Plex Sans}{Απενεργοποιήστε την έξοδο πριν συνδέσετε το φορτίο.}
+\sample{ar}{Noto Naskh Arabic / IBM Plex Sans Arabic}{أوقف تشغيل المخرج قبل توصيل الحمل.}
+\sample{he}{Noto Serif Hebrew / IBM Plex Sans Hebrew}{יש לכבות את המוצא לפני חיבור העומס.}
+\sample{hi}{Noto Serif Devanagari / IBM Plex Sans Devanagari}{लोड जोड़ने से पहले आउटपुट बंद करें।}
+\sample{th}{Noto Serif Thai / IBM Plex Sans Thai Looped}{ปิดเอาต์พุตก่อนต่อโหลด}
+
+\section*{Line breaking in Thai}
+
+Thai has no spaces between words. plaindoc relies on babel's Thai
+patterns to find break points; check the result visually.
+
+\begin{lang}{th}
+ก่อนเชื่อมต่อโหลด ให้ปิดเอาต์พุตของแหล่งจ่ายไฟทุกครั้ง ตรวจสอบขั้วบวกและขั้วลบของโหลดให้ถูกต้อง แล้วจึงกดปุ่มเอาต์พุตเพื่อเริ่มจ่ายไฟ หากไฟแสดงสถานะกระแสคงที่ติดสว่าง ให้ตรวจสอบว่าโหลดลัดวงจรหรือไม่
+\end{lang}
+
+\end{document}
