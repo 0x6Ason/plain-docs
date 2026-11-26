@@ -41,6 +41,9 @@ translate); reports are justified with hyphenation and microtype.
 | --- | --- | --- |
 | An ordered task | `steps` with `\result{...}` after the step that produces it | a paragraph with "first… then…" |
 | A hazard | `safety` with `danger`, `warning`, `caution` or `notice` | bold red text, a coloured box |
+| The same hazard again, at a step | `\pdhazard{notice}{One sentence.}` | the full box repeated |
+| Terms and their meanings | `description` (terms hang in the index column) | bold term on its own line |
+| A table with three or more text columns | `widetable` (spans the index column) | a narrow table that wraps every cell |
 | Context the reader may need | `note` (label in the index column) | "Please note that…" |
 | Parts of a product | TikZ drawing with `\pdcallout` + `pdlegend` | a photo with arrows added later |
 | Comparable values | `xltabular` or `tabularx` with booktabs rules | paragraphs in table cells |
@@ -87,7 +90,16 @@ the hazard, the consequence and how to avoid it. Levels:
 | `notice` | could damage property; no personal injury (no alert symbol) |
 
 Choose the level from the actual risk. Do not raise a level for emphasis, do
-not stack several messages for one hazard, and do not invent hazards.
+not stack several messages for one hazard, and do not invent hazards. Run the
+hazard check in `writing.md` before writing any of them.
+
+After a hazard has had its full message, later steps carry an embedded
+message, a signal-word label at the start of one sentence:
+
+```latex
+\item Press \ui{Home motor}.
+      \pdhazard{notice}{Only \key{SW1} or \ui{STOP} cuts the motor's power during a homing.}
+```
 
 ### Figures and technical drawings
 
@@ -113,15 +125,25 @@ Drawing conventions:
   recessed or glass area.
 - Labels printed on the product are live text in the drawing, at the size
   they would read on the product relative to the drawing.
-- Callout markers sit outside the outline, in rows or columns, numbered in
-  reading order. Leaders are straight, vertical or horizontal where possible,
-  end on the feature with a dot, and never cross another leader or run
-  through text.
+- Callout markers sit outside the outline on one side or two opposite
+  sides (above and below, or left and right), never all four. Numbers run
+  left to right along the top row, then left to right along the bottom row
+  (top to bottom for side columns). A skipped or out-of-order number is an
+  error. Leaders are straight, vertical or horizontal where possible, end on
+  the feature with a dot, and never cross another leader or run through
+  text.
 - The legend lists every number once, in order, with the part name as printed
   on the product.
 - Draw only what the reader must locate. A drawing is not a photograph.
 - For a fictional or schematic product, say so in the caption. Never present
   an AI-generated image as the product.
+
+### Term lists
+
+`description` hangs each term in the index column (manuals) or the margin
+(reports, memos), right-aligned like the other labels, with its meaning on
+the text edge. Long terms wrap inside the column. Use it for indicator
+meanings, parts of a system, status categories.
 
 ### Tables
 
@@ -129,7 +151,21 @@ Booktabs rules only: a heavy rule at top and bottom, a light rule under the
 header, no vertical rules, no fills. Use `L` (ragged-right `X`) and `P{width}`
 (ragged-right `p`) columns so narrow cells do not justify into gaps. Short
 tables are `tabularx` and stay in one piece; tables that may cross a page are
-`xltabular` with the head repeated through `\endhead`. Column heads with `\hd{...}`, group rows
+`xltabular` with the head repeated through `\endhead`. In manuals, a table
+with three or more columns of running text is a `widetable`, which spans the
+index column as well, takes its caption as an optional argument and breaks
+across pages:
+
+```latex
+\begin{widetable}[{Problems you can see on the screen.\label{tab:screen}}]{P{40mm}LL}
+\toprule \hd{Seen} & \hd{Cause} & \hd{Do} \\ \midrule \endhead
+...
+\bottomrule
+\end{widetable}
+```
+
+The class sets a taller row strut, so rows whose cells wrap stay distinct
+without rules between them. Column heads with `\hd{...}`, group rows
 with `\pdgroup{...}`, units in the cells through `\qty` or in the head in
 parentheses. Align decimal columns with siunitx `S` columns.
 
@@ -149,6 +185,9 @@ limits as grey dashed lines labelled in words.
   a page; the class sets the penalties, check the result.
 - Cover (manuals): brand, product and document type, one product drawing,
   document number, version and date. No background images, no colour fields.
+  The subtitle is the document type in a few words ("User manual"); the scope
+  goes in *About this manual*. The brand line is left out automatically when
+  it repeats the product name.
 - Running heads: product and document type on the left, chapter on the right;
   document number and version in the footer, page number at the outer edge.
 

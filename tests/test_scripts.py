@@ -55,6 +55,23 @@ class LintTests(unittest.TestCase):
     def test_verbatim_ignored(self):
         self.assertEqual(lint.lint_text("\\begin{code}\nTODO \"x\" ...\n\\end{code}\n"), [])
 
+    def test_reader_facing_content(self):
+        src = ("The password is kept in CLAUDE.md.\n"
+               "See docs/research/plan.md and commit 744e70d.\n"
+               "The rig has no hazard to people.\n")
+        self.assertEqual(codes(lint.lint_text(src)), {"internal-file", "commit-hash", "no-hazard-claim"})
+
+    def test_manual_only_rules(self):
+        body = "Three drops on 2026-11-24. The PD input was never tried.\n"
+        manual = "\\documentclass[type=manual]{plaindoc}\n" + body
+        report = "\\documentclass[type=report]{plaindoc}\n" + body
+        self.assertEqual(codes(lint.lint_text(manual)), {"dated-history", "test-status"})
+        self.assertEqual(codes(lint.lint_text(report)), set())
+
+    def test_metadata_lines_exempt(self):
+        src = "\\documentclass[type=manual, accent=1d4f91]{plaindoc}\n\\pdset{date={2026-11-25}}\n"
+        self.assertEqual(lint.lint_text(src), [])
+
     def test_cjk_halfwidth(self):
         self.assertIn("cjk-halfwidth", codes(lint.lint_text("請按下按鈕,然後關閉.")))
 
@@ -101,6 +118,16 @@ class BuildTests(unittest.TestCase):
 
     def test_clean_build(self):
         self.assertEqual(self.build(r"\section{Range}Range −10 °C to 50 °C, error ≤ 0.5 °C."), 0)
+
+    def test_manual_components(self):
+        body = (r"\chapter{Parts}"
+                r"\begin{description}\item[Phone] Tracks the subject.\item[A long term that wraps] Text.\end{description}"
+                r"\begin{safety}{notice}[Homing]Only cutting power stops a homing.\end{safety}"
+                r"\begin{steps}\item Press \ui{Home}. \pdhazard{notice}{Only \key{SW1} stops it.}\end{steps}"
+                r"\begin{widetable}[{Problems.}]{P{40mm}LL}\toprule \hd{A} & \hd{B} & \hd{C} \\ \midrule \endhead "
+                r"x & long text that wraps across the column more than once for sure & y \\ \bottomrule\end{widetable}"
+                "Range −10 °C, ≤ 0.5.")
+        self.assertEqual(self.build(body, "type=manual"), 0)
 
     def test_missing_glyph_fails(self):
         # Linear B is in none of the configured fonts.

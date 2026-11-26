@@ -126,17 +126,15 @@ connected to a person, or in wet or explosive environments.
 
 \section{Display indicators}
 
-\begin{tabularx}{\linewidth}{@{}P{16mm}L@{}}
-\toprule
-\hd{Indicator} & \hd{Meaning} \\
-\midrule
-\textbf{CV}   & Constant voltage. The output voltage equals the set value. \\
-\textbf{CC}   & Constant current. The load draws the current limit, so the voltage is lower than set. \\
-\textbf{OUT}  & The output is on. \\
-\textbf{LOCK} & The front panel is locked. \\
-\textbf{OTP}  & Over-temperature protection switched the output off. See \cref{ch:trouble}. \\
-\bottomrule
-\end{tabularx}
+The display shows these indicators beside the readings.
+
+\begin{description}
+\item[CV] Constant voltage. The output voltage equals the set value.
+\item[CC] Constant current. The load draws the current limit, so the voltage is lower than set.
+\item[OUT] The output is on.
+\item[LOCK] The front panel is locked.
+\item[OTP] Over-temperature protection switched the output off. See \cref{ch:trouble}.
+\end{description}
 
 \section{Rear panel}
 
@@ -171,6 +169,7 @@ You need:
 \begin{steps}
 \item Place the DP305 on a flat surface with \qty{10}{\cm} of free space behind it.
 \item Connect the power cord to the mains inlet and to an earthed socket.
+      \pdhazard{warning}{Use only an undamaged cord with a protective earth conductor.}
 \item Press the \ui{POWER} switch.
       \result{The display shows the last set values. The \ui{OUT} indicator is off.}
 \end{steps}
@@ -277,26 +276,22 @@ Example session (sent lines start with \cmd{>}):
 \chapter{Troubleshooting}
 \label{ch:trouble}
 
-\begin{xltabular}{\linewidth}{@{}P{36mm}LL@{}}
+\begin{widetable}[{Symptoms, causes and actions.\label{tab:trouble}}]{@{}P{42mm}LL@{}}
 \toprule
 \hd{Symptom} & \hd{Possible cause} & \hd{Action} \\
 \midrule
 \endhead
 Display stays dark. & No mains power, or the fuse has blown. &
   Check the socket and cord. Replace the fuse with the spare in the fuse drawer. \\
-\addlinespace
 \ui{CC} lights and the voltage is low. & The load draws the current limit. &
   Check the load for a short circuit. Raise the limit if the load needs it. \\
-\addlinespace
 \ui{OTP} lights and the output is off. & The DP305 is too hot. &
   Clear the fan outlet and vents. Wait \qty{10}{\minute}, then press \key{OUTPUT}. \\
-\addlinespace
 Knobs do nothing. & The front panel is locked. & Hold \key{LOCK} for \qty{2}{\s}. \\
-\addlinespace
 No serial port on the computer. & Charge-only USB cable, or no driver. &
   Use a USB data cable. The port uses the standard CDC-ACM driver. \\
 \bottomrule
-\end{xltabular}
+\end{widetable}
 
 If none of these actions helps, note the serial number from the rating plate
 and the firmware version from \cmd{*IDN?}, then contact your supplier.

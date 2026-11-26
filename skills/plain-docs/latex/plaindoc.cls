@@ -622,7 +622,16 @@
 \setlist[itemize,2]{label=–}
 \setlist[enumerate]{leftmargin=1.6em, label=\arabic*.}
 \setlist[enumerate,2]{label=\alph*.}
-\setlist[description]{leftmargin=0pt, labelindent=0pt, style=nextline}
+% Term lists: the term hangs in the index column (manual) or the margin
+% (report, memo), right-aligned like every other label; the text stays on
+% the text edge. Long terms wrap inside the column.
+\newlength\pd@termwidth
+\pd@iftype{manual}{\setlength\pd@termwidth{\dimexpr\pd@hang-\pd@numgap\relax}}
+  {\setlength\pd@termwidth{30mm}}
+\SetLabelAlign{pdterm}{\parbox[t]{\labelwidth}{\RaggedLeft\strut#1\strut}}
+\setlist[description]{style=standard, leftmargin=0pt, itemindent=0pt,
+  labelwidth=\pd@termwidth, labelsep=\pd@numgap, align=pdterm,
+  itemsep=.4\baselineskip, font=\pd@sffont\bfseries\small}
 
 % Procedures: step numbers hang in the index column.
 \newlist{steps}{enumerate}{2}
@@ -673,6 +682,20 @@
   \IfValueT{#2}{{\bfseries #2}\par}}%
   {\end{tcolorbox}}
 
+% Embedded safety message (ANSI Z535.6): the signal word panel shrinks to
+% a label at the start of the text. Use inside a procedure, at the step
+% the hazard applies to, after the full message has appeared once.
+%   \pdhazard{notice}{Only SW1 or STOP cuts the motor's power during a homing.}
+\newcommand\pdhazard[2]{%
+  \ifcsname pd@safety@#1\endcsname\else
+    \ClassError{plaindoc}{Unknown safety level '#1'}{Use danger, warning, caution or notice.}\fi
+  \par\addvspace{.2\baselineskip}{\csname pd@safety@#1\endcsname
+  \def\pd@slevel{#1}\def\pd@notice{notice}%
+  \noindent{\setlength\fboxsep{1.6pt}\colorbox{\pd@sbg}{\textcolor{\pd@sfg}{%
+    \pd@sffont\bfseries\footnotesize\pd@ssym
+    \ifx\pd@slevel\pd@notice\itshape\fi\textls[60]{\pd@str{#1}}}}}%
+  \enspace\ignorespaces#2\par}\addvspace{.2\baselineskip}}
+
 % ==================================================================
 % Interface vocabulary
 % ==================================================================
@@ -702,7 +725,20 @@
 \renewcommand\topfraction{.85}\renewcommand\bottomfraction{.6}
 \renewcommand\textfraction{.12}\renewcommand\floatpagefraction{.75}
 
-% Tables: booktabs rules, no vertical rules, no fills.
+% Tables: booktabs rules, no vertical rules, no fills. A taller row strut
+% (array stretch) adds space between rows but not between the lines of a
+% wrapped cell, so wrapped rows stay distinct without rules between them.
+\renewcommand\arraystretch{1.3}
+% A table that spans the index column too (manual). Breaks across pages
+% and repeats its head (\endhead). The caption goes in the optional
+% argument, not inside the table:
+%   \begin{widetable}[{Problems on the screen.\label{tab:screen}}]{P{40mm}LL}
+\newenvironment{widetable}[2][]{%
+  \if\relax\detokenize{#1}\relax\else
+    \par\addvspace{.8\baselineskip}\captionof{table}{#1}\nopagebreak[4]\fi
+  \setlength\LTleft{-\pd@hang}\setlength\LTright{0pt}%
+  \setlength\LTpre{4pt}%
+  \xltabular{\dimexpr\linewidth+\pd@hang\relax}{#2}}{\endxltabular}
 \setlength\heavyrulewidth{.8pt}\setlength\lightrulewidth{.4pt}
 \setlength\cmidrulewidth{.4pt}
 \setlength\aboverulesep{.5ex}\setlength\belowrulesep{.6ex}
@@ -779,13 +815,25 @@
 \renewcommand\maketitle{\pd@iftype{manual}{\pd@title@manual}%
   {\pd@iftype{memo}{\pd@title@memo}{\pd@title@report}}}
 
+% The brand line is printed only when it adds something to the title.
+\ExplSyntaxOn
+\cs_new:Npn \pd@ifbrandline #1#2
+  {
+    \tl_if_empty:NTF \g_pd_brand_tl {#2}
+      {
+        \str_if_eq:eeTF { \text_lowercase:n { \tl_use:N \g_pd_brand_tl } }
+                        { \text_lowercase:n { \tl_use:N \g_pd_title_tl } }
+          {#2} {#1}
+      }
+  }
+\ExplSyntaxOff
 \newcommand\pd@title@manual{%
   \begin{titlepage}\pdfbookmark[0]{\pdmeta{title}}{title}%
   \newgeometry{left=\pd@outer, right=\pd@outer, top=24mm, bottom=24mm}%
   \pd@sffont\color{pd-ink}\RaggedRight
-  \pdifmeta{brand}{{\bfseries\small\textls[80]{\MakeUppercase{\pdmeta{brand}}}}\par\vspace*{18mm}}{\vspace*{22mm}}%
+  \pd@ifbrandline{{\bfseries\small\textls[80]{\MakeUppercase{\pdmeta{brand}}}}\par\vspace*{18mm}}{\vspace*{22mm}}%
   {\fontsize{30}{35}\selectfont\bfseries\pdmeta{title}\par}%
-  \pdifmeta{subtitle}{\vspace{3mm}{\fontsize{30}{35}\selectfont\color{pd-ink2}\pdmeta{subtitle}\par}}{}%
+  \pdifmeta{subtitle}{\vspace{4mm}{\fontsize{20}{25}\selectfont\color{pd-ink2}\pdmeta{subtitle}\par}}{}%
   \vfill
   {\pd@coverfigure\par}%
   \vfill

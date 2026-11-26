@@ -24,10 +24,17 @@ is the content, the structure and the checks.
 3. **Colour by role only** (`references/color.md`). Text is black. One accent at
    most, for navigation and figure callouts. Safety colours only in safety
    messages. Data colours only in charts.
-4. **No invented facts.** Do not make up specifications, ratings, warnings,
-   certifications, contacts or version numbers to make a document feel
-   complete. Missing facts are listed back to the user.
-5. **Verified build.** `scripts/lint.py` and `scripts/build.py` report zero
+4. **No invented facts, no false all-clears.** Do not make up
+   specifications, ratings, warnings, certifications, contacts or version
+   numbers to make a document feel complete, and never write that a product
+   has no hazards: run the hazard check in `references/writing.md` and ask
+   about what the sources do not cover. Missing facts are listed back to the
+   user.
+5. **One reader per document.** A manual is for operating the product. Test
+   status, development history (commit hashes, repository paths, incident
+   dates), agent files such as `CLAUDE.md` and notes made while writing go
+   in a report or in the delivery note, never in the manual.
+6. **Verified build.** `scripts/lint.py` and `scripts/build.py` report zero
    errors, and you have looked at every rendered page before delivering.
 
 ## Workflow
@@ -35,15 +42,20 @@ is the content, the structure and the checks.
 1. **Brief.** From the request and sources, settle: reader and their task,
    document type (`manual`, `report`, `memo`), language and region (`zh-HK` is
    not `zh-TW`), paper (A4 unless the user is in North America or says Letter),
-   and the source of every fact. Ask only for facts that would change the
-   content.
+   and the source of every fact. If the sources mix operating instructions
+   with test status or development history, plan separate documents (see
+   "One reader per document" in `references/writing.md`). Ask only for facts
+   that would change the content.
 2. **Plan.** List the chapters or sections and, for a manual, the figures each
    task needs (overview drawing with callouts, connection diagram, screen).
    Manuals are organised by task; reports lead with the finding.
 3. **Start from a template** in `templates/` (`manual.tex`, `report.tex`,
    `memo.tex`). Read `references/layout.md` for the components: `steps`,
-   `\result`, `safety`, `note`, `\pdwide`, `\pdcallout`, `pdlegend`, `\key`,
-   `\ui`, `\menu`, `\qty`, `\hd`, `\pdgroup`, `lang`.
+   `\result`, `safety`, `\pdhazard`, `note`, `description`, `\pdwide`,
+   `widetable`, `\pdcallout`, `pdlegend`, `\key`, `\ui`, `\menu`, `\qty`,
+   `\hd`, `\pdgroup`, `lang`. Manuals keep the asymmetric grid: numbers,
+   terms and labels in the index column, wide tables and figures across both
+   columns.
 4. **Write** following `references/writing.md`. For any language other than
    English, also follow its entry in `references/languages.md` (conventions
    drawn from Microsoft's localization style guides and national standards).
@@ -59,8 +71,10 @@ is the content, the structure and the checks.
    Then open `out/contact.png` and every `out/page-*.png` and review them
    against `references/verification.md`. Rebuild after each fix.
 7. **Deliver** the PDF and its sources (`.tex`, figure files, `plaindoc.cls`).
-   In two or three lines, tell the user anything they must act on: a font
-   fallback, an untranslated label, facts you could not confirm.
+   In a few lines, tell the user anything they must act on: a font fallback,
+   an untranslated label, facts you could not confirm, contradictions between
+   sources, hazards the sources do not cover, material left for another
+   document. These go in your message, not in the document.
 
 ## Setup
 

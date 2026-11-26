@@ -18,8 +18,12 @@ in 25 languages.
   Okabe–Ito colours only in charts. No tinted boxes, gradients or coloured
   headings.
 - **Built for instructions.** Hanging step numbers with results, ANSI Z535.6
-  safety messages, technical drawings with numbered callouts and matching
-  legends, booktabs tables, locale-aware units.
+  section and embedded safety messages, technical drawings with numbered
+  callouts and matching legends, term lists and wide tables that use the
+  index column, locale-aware units.
+- **One reader per document.** Manuals keep out test status, commit hashes,
+  repository paths and review notes; the skill runs a hazard check instead of
+  ever claiming there is none.
 - **Checked.** A linter for source-level slop and a build checker for missing
   glyphs, overfull lines, unresolved references, font embedding and required
   text, plus page renders for visual review.
@@ -119,7 +123,7 @@ tests/                  python3 -m unittest discover -s tests -v
 On Ubuntu 24.04 with TeX Live 2023: all five examples build with zero errors
 from `check.py` (the language specimen reports one intended warning: no
 Portuguese (Portugal) signal words), every page was rendered and reviewed,
-and the 13 unit and integration tests pass. Not yet tested: MiKTeX, macOS,
+and the 17 unit and integration tests pass. Not yet tested: MiKTeX, macOS,
 TeX Live 2025 tagged-PDF output, and PDF/UA validation.
 
 LuaTeX-ja is memory-hungry with large CJK fonts: the example manual with one

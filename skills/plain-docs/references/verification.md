@@ -11,7 +11,9 @@ python3 scripts/lint.py document.tex chapters/*.tex
 Errors (exit 1): placeholders, chatbot residue, emoji, raw colours, packages
 that override the class. Warnings: padding words, Title Case or colon
 headings, manual spacing, size commands, straight quotes, three dots, spaced
-hyphens, units typed by hand, half-width punctuation in CJK text. Fix each
+hyphens, units typed by hand, half-width punctuation in CJK text, internal
+files and repository paths, commit hashes, claims of no hazard, and in
+manuals, dated history and test status. Fix each
 warning or be able to say why it stands (a quoted UI string, a literal
 example).
 
@@ -76,6 +78,13 @@ reading size. Check:
 **Content**
 - Every value matches the source. Every safety message has hazard,
   consequence and avoidance, at the right level.
+- The hazard check in `writing.md` has been run; anything the sources do not
+  cover is in the delivery note, not written as "no hazard".
+- No full safety box appears more than twice; later occurrences are
+  embedded messages.
+- The document has one reader: no commit hashes, repository paths, agent
+  files, incident dates, test status or review notes in a manual.
+- Callout numbers run in order on one side or two opposite sides.
 - No placeholder, no "TBD", no invented contact or standard.
 
 Fix, rebuild, and look again at the pages that changed and the pages after
@@ -84,8 +93,10 @@ them (pagination moves).
 ## 4. Delivery note
 
 Tell the user, briefly: what was produced; any font fallback or user font;
-untranslated or unverified items; facts that were missing from the sources.
-Do not paste the check output.
+untranslated or unverified items; facts that were missing from the sources;
+contradictions between sources; hazards the sources do not cover; material
+left out because it belongs in another document. Do not paste the check
+output, and do not put any of this inside the document itself.
 
 ## Accessibility (tagged PDF)
 
