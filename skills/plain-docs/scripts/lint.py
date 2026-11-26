@@ -41,6 +41,14 @@ SOURCE_RULES = [
     ("warning", "bare-unit",
      r"(?:(?<=\s)|^)\d+(\.\d+)?\s?(mV|mA|kV|kW|kHz|MHz|GHz|mm|cm|kg|°C|ms|µs)\b(?!\s*[,=\]])",
      "Number with unit outside \\qty: spacing and decimal marker will not follow the language"),
+    ("warning", "internal-file",
+     r"\b(CLAUDE|AGENTS|GEMINI|CONVENTIONS)\.md\b|\.cursorrules|\.claude/|(?<![\w/.])(docs|src|ios|android|firmware|tools|scripts|research)/[\w.-]+/?[\w./-]*",
+     "Internal file or repository path in reader-facing text: readers cannot open it"),
+    ("warning", "commit-hash", r"\b(?=[0-9a-f]*[a-f])(?=[0-9a-f]*[0-9])[0-9a-f]{7,40}\b",
+     "Commit hash: identify versions by release number; development provenance belongs in a report"),
+    ("warning", "no-hazard-claim",
+     r"\bno (known |documented )?(hazards?|risks?|danger)\b|\b(completely|totally|perfectly) safe\b",
+     "Claim that there is no hazard: run the hazard check (references/writing.md) and ask the owner"),
     ("warning", "cjk-halfwidth",
      r"[\u4e00-\u9fff\u3040-\u30ff][,.:;!?](?=[\u4e00-\u9fff\u3040-\u30ff\s]|$)",
      "Half-width punctuation after CJK text: use ，。：；！？"),
@@ -84,14 +92,24 @@ def heading_findings(title, lineno, path):
 
 VERBATIM_ENVS = {"code", "Verbatim", "verbatim", "lstlisting", "minted"}
 DRAWING_ENVS = {"tikzpicture", "axis", "scope"}
-TABLE_ENVS = {"tabular", "tabular*", "tabularx", "xltabular", "longtable", "array", "align", "align*"}
+TABLE_ENVS = {"tabular", "tabular*", "tabularx", "xltabular", "widetable", "longtable", "array", "align", "align*"}
 ENV_RE = re.compile(r"\\(begin|end)\{([^}]+)\}")
 # Rules that only make sense in running prose.
 PROSE_ONLY = {"forced-break", "bare-unit", "three-dots", "size-command", "spaced-hyphen",
               "exclamation", "straight-quote", "manual-space"}
 
 
-def lint_text(text, path="<string>"):
+MANUAL_ONLY = [
+    ("warning", "dated-history", r"\b20\d\d-[01]\d-[0-3]\d\b",
+     "Dated event in a manual: state the behaviour and the action; history belongs in a test report"),
+    ("warning", "test-status", r"\b([Nn]ever (been )?(tried|tested)|[Nn]ot (yet )?(tried|tested|built)|[Uu]ntested)\b",
+     "Test status in a manual: describe what the reader can use; status belongs in a report"),
+]
+
+
+def lint_text(text, path="<string>", manual=None):
+    if manual is None:
+        manual = bool(re.search(r"\\documentclass\[[^\]]*type\s*=\s*manual", text))
     findings = []
     stack = []
     para_bold = 0
@@ -111,7 +129,10 @@ def lint_text(text, path="<string>"):
         if not line.strip():
             para_bold = 0
             continue
-        for level, code, pattern, message in SOURCE_RULES:
+        rules = SOURCE_RULES + (MANUAL_ONLY if manual else [])
+        if re.match(r"\s*\\(pdset|documentclass)|\s*(version|date|docid|org)\s*=", line):
+            rules = [r for r in rules if r[1] not in ("dated-history", "commit-hash")]
+        for level, code, pattern, message in rules:
             if code in PROSE_ONLY and (in_drawing or in_table):
                 continue
             if code == "manual-space" and re.search(r"\\pdset|\\newcommand|\\def", line):
@@ -139,10 +160,14 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("files", nargs="+", type=Path)
     ap.add_argument("--json", type=Path)
+    ap.add_argument("--manual", action="store_true",
+                    help="apply manual-only rules (automatic when a file has type=manual)")
     args = ap.parse_args(argv)
+    texts = {f: f.read_text(encoding="utf-8") for f in args.files}
+    manual = args.manual or any(re.search(r"\\documentclass\[[^\]]*type\s*=\s*manual", t) for t in texts.values())
     findings = []
-    for f in args.files:
-        findings += lint_text(f.read_text(encoding="utf-8"), f)
+    for f, t in texts.items():
+        findings += lint_text(t, f, manual=manual)
     for f in findings:
         print(f"{f['file']}:{f['line']}: {f['level']}: [{f['code']}] {f['message']}")
     errors = sum(f["level"] == "error" for f in findings)
